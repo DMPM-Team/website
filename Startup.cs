@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Identity.Core;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using AspNet.Security.OAuth.GitHub;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace DMPackageManager.Website {
     public class Startup {
@@ -35,8 +37,6 @@ namespace DMPackageManager.Website {
                 options.ClientId = Configuration["GitHub:client_id"];
                 options.ClientSecret = Configuration["GitHub:client_secret"];
                 options.CallbackPath = "/oauth_callback";
-                //options.SignInScheme = "Cookies";
-                //options.SaveTokens = true;
             });
             services.AddControllersWithViews();
         }
@@ -46,7 +46,7 @@ namespace DMPackageManager.Website {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             } else {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -55,15 +55,13 @@ namespace DMPackageManager.Website {
 
             app.UseRouting();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
+
             dbc.Database.EnsureCreated();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapDefaultControllerRoute();
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

@@ -18,7 +18,7 @@ namespace DMPackageManager.Website.Controllers {
         }
 
         public IActionResult Index() {
-            return Ok(_configuration["Database:ConnectionString"]);
+            return Ok();
         }
     }
 }

@@ -12,5 +12,7 @@ namespace DMPackageManager.Website.Database {
         }
         
         public DbSet<Package> packages { get; set; }
+
+        public DbSet<DatabaseUser> users { get; set; }
     }
 }

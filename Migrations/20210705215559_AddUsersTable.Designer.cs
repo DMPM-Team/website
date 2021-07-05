@@ -3,14 +3,16 @@ using System;
 using DMPackageManager.Website.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DMPackageManager.Website.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210705215559_AddUsersTable")]
+    partial class AddUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,26 +48,15 @@ namespace DMPackageManager.Website.Migrations
                     b.Property<string>("latest_version")
                         .HasColumnType("longtext");
 
-                    b.Property<long?>("owneruserId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("owner")
+                        .HasColumnType("int");
 
                     b.Property<string>("package_name")
                         .HasColumnType("longtext");
 
                     b.HasKey("id");
 
-                    b.HasIndex("owneruserId");
-
                     b.ToTable("packages");
-                });
-
-            modelBuilder.Entity("DMPackageManager.Website.Models.Database.Package", b =>
-                {
-                    b.HasOne("DMPackageManager.Website.Models.Database.DatabaseUser", "owner")
-                        .WithMany()
-                        .HasForeignKey("owneruserId");
-
-                    b.Navigation("owner");
                 });
 #pragma warning restore 612, 618
         }

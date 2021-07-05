@@ -15,7 +15,7 @@ namespace DMPackageManager.Website.Models.Database {
         /// <summary>
         /// Owner ID (GitHub account)
         /// </summary>
-        public int owner { get; set; }
+        public DatabaseUser owner { get; set; }
 
         /// <summary>
         /// Package name
@@ -36,7 +36,5 @@ namespace DMPackageManager.Website.Models.Database {
         /// Date the package was created
         /// </summary>
         public DateTime creation_date { get; set; }
-
-        
     }
 }
