@@ -1,4 +1,5 @@
 ﻿using DMPackageManager.Website.Models.Database;
+using DMPackageManager.Website.Util;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace DMPackageManager.Website.Models.Page {
         /// <summary>
         /// List of all packages to display here
         /// </summary>
-        public List<Package> packages { get; set; } = new List<Package>();
+        public PaginatedList<Package> packages { get; set; }
     }
 }

@@ -4,5 +4,45 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model DMPackageManager.Website.Models.Page.UserPackageList;
+@using DMPackageManager.Website.Models.Database;
+@using DMPackageManager.Website.Util;
+@{
+    string prevDisabled = !Model.packages.HasPreviousPage ? "disabled" : "";
+    string nextDisabled = !Model.packages.HasNextPage ? "disabled" : "";
+}
 <h1 class="display-4">@Model.package_owner's packages</h1>
+<div class="mb-1">
+    @if (Model.own_packages) {
+        // Check if we are looking at our own package list
+        <a class="btn btn-success" asp-area="" asp-controller="core" asp-action="createnew">Create Package</a>
+    }
+    @if (Model.packages.HasPreviousPage) {
+        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex - 1)" class="btn btn-primary">Previous</a>
+    }
+    @if (Model.packages.HasNextPage) {
+        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex + 1)" class="btn btn-primary @nextDisabled">Next</a>
+    }
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Date Created</td>
+            <td>Date Updated</td>
+            <td>Latest Version</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Package P in Model.packages) {
+            <tr>
+                <td>@P.package_name</td>
+                <td>@P.description</td>
+                <td>@P.creation_date</td>
+                <td>TODO</td>
+                <td>TODO</td>
+            </tr>
+        }
+    </tbody>
+</table>
 

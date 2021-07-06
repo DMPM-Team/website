@@ -77,5 +77,15 @@ namespace DMPackageManager.Website.Util {
             }
             
         }
+
+        /// <summary>
+        /// Converts a username into a user ID
+        /// </summary>
+        /// <param name="username">The username to lookup</param>
+        /// <param name="dbc">The <see cref="DatabaseContext">DatabaseContext</see> to use.</param>
+        /// <returns></returns>
+        public static Int64 Name2ID(string username, DatabaseContext dbc) {
+            return dbc.users.Where(u => u.username == username).First().userId;
+        }
     }
 }
