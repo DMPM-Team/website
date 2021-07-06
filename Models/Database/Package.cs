@@ -31,5 +31,15 @@ namespace DMPackageManager.Website.Models.Database {
         /// Date the package was created
         /// </summary>
         public DateTime creation_date { get; set; }
+
+        /// <summary>
+        /// Optional URL for the package source code
+        /// </summary>
+        public string source_url { get; set; }
+
+        /// <summary>
+        /// Optional URL for the package documentation
+        /// </summary>
+        public string documentation_url { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMPackageManager.Website.Models.Page {
-    public class PackageList : PageBaseModel {
+    public class PackageList {
         /// <summary>
         /// List of all packages to display here
         /// </summary>

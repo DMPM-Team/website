@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewData["Title"] = "Create package";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model DMPackageManager.Website.Models.Page.CreatePackageInfo;
+
+<h1 class="display-4">Create new package</h1>
+<form method="post">
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <input type="text" class="form-control" name="pname" aria-describedby="namehelp" placeholder="Package name" value="@Model.pname">
+                <small id="namehelp" class="form-text text-muted">Must be between 4-32 characters. No spaces. Lowercase alphanumeric only (dashes and underscores are allowed).</small>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <input type="text" class="form-control" name="pdesc" aria-describedby="deschelp" placeholder="Package description" value="@Model.pdesc">
+                <small id="deschelp" class="form-text text-muted">Must be between 8-256 characters.</small>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <input type="text" class="form-control" name="surl" aria-describedby="sourcehelp" placeholder="Source code URL (Optional)" value="@Model.surl">
+                <small id="namehelp" class="form-text text-muted">GitHub repository recommended.</small>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <input type="text" class="form-control" name="durl" aria-describedby="dochelp" placeholder="Documentation URL (Optional)" value="@Model.durl">
+                <small id="deschelp" class="form-text text-muted">This can be a markdown file on your code repo, or a docs site, or anything really.</small>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success btn-block">Create</button>
+    @if(Model.errors.Count > 0) {
+        <div class="alert alert-danger mt-2">
+            <h3>The following errors occured when trying to create the package:</h3>
+            <ul>
+                @foreach(string S in Model.errors) {
+                    <li>@S</li>
+                }
+            </ul>
+        </div>
+    }
+</form>
