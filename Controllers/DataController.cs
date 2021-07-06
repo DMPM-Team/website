@@ -36,6 +36,7 @@ namespace DMPackageManager.Website.Controllers {
                 // Format their username
                 upl.package_owner = UserUtil.FormatUser(userName, _dbc);
                 upl.packages = FilterPackages(userName, null, page);
+                upl.package_meta = FormatPackageMeta(upl.packages);
                 if (UserUtil.IsLoggedIn(HttpContext) && (UserUtil.UserFromContext(HttpContext).username == upl.package_owner)) {
                     upl.own_packages = true;
                 }
@@ -57,6 +58,7 @@ namespace DMPackageManager.Website.Controllers {
             SearchablePackageList spl = new SearchablePackageList();
             spl.packages = FilterPackages(null, searchQuery, page);
             spl.search_query = searchQuery;
+            spl.package_meta = FormatPackageMeta(spl.packages);
             return View("PackagesList", spl);
         }
 
@@ -67,7 +69,7 @@ namespace DMPackageManager.Website.Controllers {
         /// <param name="searchQuery">The package name to filter by, if any</param>
         /// <param name="page">Which page to retrieve</param>
         /// <returns></returns>
-        public PaginatedList<Package> FilterPackages(string userName = null, string searchQuery = null, int page = 1) {
+        private PaginatedList<Package> FilterPackages(string userName = null, string searchQuery = null, int page = 1) {
             int pageSize = 50; // Tweak this as needed
             int offset = (pageSize * page) - pageSize;
             IQueryable<Package> query = _dbc.packages.Include(p => p.owner);
@@ -80,6 +82,25 @@ namespace DMPackageManager.Website.Controllers {
             }
 
             return PaginatedList<Package>.Create(query.AsNoTracking(), page, pageSize);
+        }
+
+        private Dictionary<int, PackageDisplay> FormatPackageMeta(PaginatedList<Package> packages) {
+            Dictionary<int, PackageDisplay> dict = new Dictionary<int, PackageDisplay>();
+            foreach(Package P in packages) {
+                // First grab the most recent version
+                
+                PackageDisplay PD = new PackageDisplay();
+                // Presence check
+                if (_dbc.package_releases.Where(r => r.package.id == P.id).Any()) {
+                    PackageVersion PV = _dbc.package_releases.Where(r => r.package.id == P.id).OrderByDescending(r => r.release_date).First();
+                    PD.latest_version = PV.version;
+                    PD.last_update = PV.release_date;
+                    // Now to get the download count
+                    PD.total_downloads = _dbc.package_releases.Where(r => r.package.id == P.id).Sum(r => r.download_count);
+                }
+                dict[P.id] = PD;
+            }
+            return dict;
         }
     }
 }

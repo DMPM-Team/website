@@ -31,17 +31,19 @@
             <td>Date Created</td>
             <td>Date Updated</td>
             <td>Latest Version</td>
+            <td>Total Downloads</td>
         </tr>
     </thead>
     <tbody>
         @foreach (Package P in Model.packages) {
-            <tr>
-                <td>@P.package_name</td>
-                <td>@P.description</td>
-                <td>@P.creation_date</td>
-                <td>TODO</td>
-                <td>TODO</td>
-            </tr>
+        <tr>
+            <td>@P.package_name</td>
+            <td>@P.description</td>
+            <td>@P.creation_date</td>
+            <td>@(Model.package_meta[P.id].last_update.CompareTo(DateTime.MinValue) == 0 ? "N/A" : Model.package_meta[P.id].last_update.ToString())</td>
+            <td>@(Model.package_meta[P.id].latest_version == null ? "N/A" : Model.package_meta[P.id].latest_version)</td>
+            <td>@(Model.package_meta[P.id].total_downloads == 0 ? "N/A" : Model.package_meta[P.id].total_downloads.ToString())</td>
+        </tr>
         }
     </tbody>
 </table>

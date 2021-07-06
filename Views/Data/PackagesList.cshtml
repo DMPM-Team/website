@@ -35,6 +35,7 @@
             <td>Date Created</td>
             <td>Date Updated</td>
             <td>Latest Version</td>
+            <td>Total Downloads</td>
         </tr>
     </thead>
     <tbody>
@@ -44,8 +45,9 @@
             <td>@P.description</td>
             <td><a asp-area="" asp-controller="user" asp-action="@P.owner.username">@P.owner.username</a></td>
             <td>@P.creation_date</td>
-            <td>TODO</td>
-            <td>TODO</td>
+            <td>@(Model.package_meta[P.id].last_update.CompareTo(DateTime.MinValue) == 0 ? "N/A" : Model.package_meta[P.id].last_update.ToString())</td>
+            <td>@(Model.package_meta[P.id].latest_version == null ? "N/A" : Model.package_meta[P.id].latest_version)</td>
+            <td>@(Model.package_meta[P.id].total_downloads == 0 ? "N/A" : Model.package_meta[P.id].total_downloads.ToString())</td>
         </tr>
         }
     </tbody>

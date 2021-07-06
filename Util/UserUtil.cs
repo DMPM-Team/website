@@ -88,6 +88,12 @@ namespace DMPackageManager.Website.Util {
             return dbc.users.Where(u => u.username == username).First().userId;
         }
 
+        /// <summary>
+        /// Converts a user ID to a username
+        /// </summary>
+        /// <param name="id">The user ID to lookup</param>
+        /// <param name="dbc">The <see cref="DatabaseContext">DatabaseContext</see> to use.</param>
+        /// <returns></returns>
         public static string ID2Name(Int64 id, DatabaseContext dbc) {
             return dbc.users.Where(u => u.userId == id).First().username;
         }
