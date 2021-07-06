@@ -14,5 +14,7 @@ namespace DMPackageManager.Website.Database {
         public DbSet<Package> packages { get; set; }
 
         public DbSet<DatabaseUser> users { get; set; }
+
+        public DbSet<PackageVersion> package_releases { get; set; }
     }
 }

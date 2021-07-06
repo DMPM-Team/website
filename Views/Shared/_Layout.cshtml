@@ -37,6 +37,11 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="https://github.com/DMPM-Team/">Source</a>
                         </li>
+                        @if (UserUtil.IsLoggedIn(Context)) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Packages" asp-action="Index">My Packages</a>
+                            </li>
+                        }
                     </ul>
                 </div>
                 @if (UserUtil.IsLoggedIn(Context)) {

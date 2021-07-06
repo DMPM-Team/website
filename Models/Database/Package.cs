@@ -28,11 +28,6 @@ namespace DMPackageManager.Website.Models.Database {
         public string description { get; set; }
 
         /// <summary>
-        /// Latest version of the package
-        /// </summary>
-        public string latest_version { get; set; } = null;
-
-        /// <summary>
         /// Date the package was created
         /// </summary>
         public DateTime creation_date { get; set; }
