@@ -14,13 +14,13 @@
 <div class="mb-1">
     @if (Model.own_packages) {
         // Check if we are looking at our own package list
-        <a class="btn btn-success" asp-area="" asp-controller="core" asp-action="createnew">Create Package</a>
+        <a class="btn btn-success btn-sm" asp-area="" asp-controller="core" asp-action="createnew">Create Package</a>
     }
     @if (Model.packages.HasPreviousPage) {
-        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex - 1)" class="btn btn-primary">Previous</a>
+        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex - 1)" class="ml-1 btn btn-primary btn-sm @prevDisabled">Previous</a>
     }
     @if (Model.packages.HasNextPage) {
-        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex + 1)" class="btn btn-primary @nextDisabled">Next</a>
+        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex + 1)" class="ml-1 btn btn-primary btn-sm @nextDisabled">Next</a>
     }
 </div>
 <table class="table">

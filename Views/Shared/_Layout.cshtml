@@ -33,7 +33,7 @@
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Main" asp-action="Index">Packages</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="packages" asp-action="">Packages</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="https://github.com/DMPM-Team/">Source / Report Issue</a>
@@ -46,9 +46,9 @@
                     </ul>
                 </div>
                 @if (UserUtil.IsLoggedIn(Context)) {
-                    <a class="nav-link badge badge-primary" asp-area="" asp-controller="Main" asp-action="logout">Logged in as @UserUtil.UserFromContext(Context).username - Logout</a>
+                    <a class="nav-link btn btn-outline-primary btn-sm" asp-area="" asp-controller="Main" asp-action="logout">Logged in as @UserUtil.UserFromContext(Context).username - Logout</a>
                 } else {
-                    <a class="nav-link badge badge-secondary" asp-area="" asp-controller="Main" asp-action="login">Sign in (GitHub)</a>
+                    <a class="nav-link btn btn-outline-secondary btn-sm" asp-area="" asp-controller="Main" asp-action="login">Sign in (GitHub)</a>
                 }
 
             </div>

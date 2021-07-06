@@ -87,5 +87,9 @@ namespace DMPackageManager.Website.Util {
         public static Int64 Name2ID(string username, DatabaseContext dbc) {
             return dbc.users.Where(u => u.username == username).First().userId;
         }
+
+        public static string ID2Name(Int64 id, DatabaseContext dbc) {
+            return dbc.users.Where(u => u.userId == id).First().username;
+        }
     }
 }
