@@ -102,6 +102,14 @@ namespace DMPackageManager.Website.Controllers {
                         cpi.errors.Add("Documentation URL is not a valid URL");
                     }
                 }
+                
+                // Success, now we begin extra validation
+                if(success) {
+                    if(_dbc.packages.Where(p => p.package_name == npi.pname).Any()) {
+                        success = false;
+                        cpi.errors.Add("Package name already in use");
+                    }
+                }
                 return View("CreatePackage", cpi);
             } else {
                 // This wasnt a post, lets just load this page
