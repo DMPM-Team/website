@@ -26,30 +26,28 @@
         }
     </form>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <td>Name</td>
-            <td>Description</td>
-            <td>Author</td>
-            <td>Date Created</td>
-            <td>Date Updated</td>
-            <td>Latest Version</td>
-            <td>Total Downloads</td>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (Package P in Model.packages) {
-        <tr>
-            <td>@P.package_name</td>
-            <td>@P.description</td>
-            <td><a asp-area="" asp-controller="user" asp-action="@P.owner.username">@P.owner.username</a></td>
-            <td>@P.creation_date</td>
-            <td>@(Model.package_meta[P.id].last_update.CompareTo(DateTime.MinValue) == 0 ? "N/A" : Model.package_meta[P.id].last_update.ToString())</td>
-            <td>@(Model.package_meta[P.id].latest_version == null ? "N/A" : Model.package_meta[P.id].latest_version)</td>
-            <td>@(Model.package_meta[P.id].total_downloads == 0 ? "N/A" : Model.package_meta[P.id].total_downloads.ToString())</td>
-        </tr>
-        }
-    </tbody>
-</table>
+@foreach (Package P in Model.packages) {
+    <div class="card mt-3">
+        <div class="card-body">
+            <h4><a asp-area="" asp-controller="package" asp-action="@P.package_name">@P.package_name</a> by <a asp-area="" asp-controller="user" asp-action="@P.owner.username">@P.owner.username</a></h4>
+            <p class="text-secondary">
+                <i class="fas fa-calendar-alt"></i>&nbsp;Created on @P.creation_date
+                @if (!(Model.package_meta[P.id].last_update.CompareTo(DateTime.MinValue) == 0)) {
+                    // ASP makes me wrap this in spans. Pain
+                    <span>&nbsp;<i class="fas fa-edit"></i>&nbsp;Updated on @Model.package_meta[P.id].last_update</span>
+                }
+
+                @if (!(Model.package_meta[P.id].latest_version == null)) {
+                    // ASP makes me wrap this in spans. Pain
+                    <span>&nbsp;<i class="fas fa-tag"></i>&nbsp;Latest version: @Model.package_meta[P.id].latest_version</span>
+                }
+                @if (!(Model.package_meta[P.id].total_downloads == 0)) {
+                    // ASP makes me wrap this in spans. Pain
+                    <span>&nbsp;<i class="fas fa-download"></i>&nbsp;@Model.package_meta[P.id].total_downloads downloads</span>
+                }
+            </p>
+            <p class="text-wrap">@P.description</p>
+        </div>
+    </div>
+}
 

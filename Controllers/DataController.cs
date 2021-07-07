@@ -63,6 +63,48 @@ namespace DMPackageManager.Website.Controllers {
         }
 
         /// <summary>
+        /// Pulls up the results for a package
+        /// </summary>
+        /// <param name="packageTag">The tag of the package to search for</param>
+        /// <param name="version">The (optional) version to load</param>
+        /// <returns></returns>
+        [Route("package/{packageTag}")]
+        public IActionResult GetPackage(string packageTag, string version) {
+            if(String.IsNullOrWhiteSpace(packageTag)) {
+                return BadRequest("No package name supplied");
+            }
+            // First we see if it exists
+            if(!_dbc.packages.Where(p => p.package_name == packageTag).Any()) {
+                return NotFound(String.Format("A package with ID `{0}` could not be found. Please check the name.", packageTag));
+            }
+            // If we have a version, check that version exists
+            PackageInfo pi = new PackageInfo();
+            pi.package = _dbc.packages.Where(p => p.package_name == packageTag).Include(p => p.owner).First();
+            // Load all releases
+            if (_dbc.package_releases.Where(r => r.package.id == pi.package.id).Any()) {
+                pi.releases = _dbc.package_releases.Where(r => r.package.id == pi.package.id).OrderByDescending(r => r.release_date).ToList();
+                // Setup counts
+                PackageVersion PV = _dbc.package_releases.Where(r => r.package.id == pi.package.id).OrderByDescending(r => r.release_date).First();
+                pi.package_meta.last_update = PV.release_date;
+                pi.package_meta.latest_version = PV.version;
+                pi.package_meta.total_downloads = _dbc.package_releases.Where(r => r.package.id == pi.package.id).Sum(r => r.download_count);
+                // Are we targeting a specific version?
+                if (!String.IsNullOrWhiteSpace(version)) {
+                    if (!_dbc.package_releases.Where(p => p.package.id == pi.package.id).Where(p => p.version == version).Any()) {
+                        return NotFound(String.Format("A package with ID `{0}` and version `{1}` could not be found. Please check the name.", packageTag, version));
+                    }
+                    pi.current_version = _dbc.package_releases.Where(p => p.package.id == pi.package.id).Where(p => p.version == version).First();
+                } else {
+                    // No? Lets just set our active to the first
+                    pi.current_version = pi.releases.First();
+                }
+            }
+
+
+            return View("PackageDetails", pi);
+        }
+
+        /// <summary>
         /// Helper to get packages and paginate them
         /// </summary>
         /// <param name="userName">The username to filter by, if any</param>

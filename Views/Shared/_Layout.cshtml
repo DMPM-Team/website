@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DMPM</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
@@ -20,35 +21,35 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Main" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Main" asp-action="Index"><i class="fas fa-home"></i>&nbsp;Home</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link text-dark dropdown-toggle" href="#" id="documentation_dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Documentation
+                                <i class="fas fa-file-alt"></i>&nbsp;Documentation
                             </a>
                             <div class="dropdown-menu" aria-labelledby="documentation_dropdown">
-                                <a class="nav-link" asp-area="" asp-controller="Main" asp-action="Index">Installation</a>
-                                <a class="nav-link" asp-area="" asp-controller="Main" asp-action="Index">Client Docs</a>
-                                <a class="nav-link" asp-area="" asp-controller="Main" asp-action="Index">Making A Package</a>
+                                <a class="nav-link" asp-area="" asp-controller="Main" asp-action="Index"><i class="fas fa-download"></i>&nbsp;Installation</a>
+                                <a class="nav-link" asp-area="" asp-controller="Main" asp-action="Index"><i class="fas fa-file-alt"></i>&nbsp;Client docs</a>
+                                <a class="nav-link" asp-area="" asp-controller="Main" asp-action="Index"><i class="fas fa-cube"></i>&nbsp;Make a package</a>
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="packages" asp-action="">Packages</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="packages" asp-action=""><i class="fas fa-cubes"></i>&nbsp;Packages</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="https://github.com/DMPM-Team/">Source / Report Issue</a>
+                            <a class="nav-link text-dark" href="https://github.com/DMPM-Team/"><i class="fab fa-github"></i>&nbsp;Source / report issue</a>
                         </li>
                         @if (UserUtil.IsLoggedIn(Context)) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="user" asp-action="@UserUtil.UserFromContext(Context).username">My Packages</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="user" asp-action="@UserUtil.UserFromContext(Context).username"><i class="fas fa-user"></i>&nbsp;My packages</a>
                             </li>
                         }
                     </ul>
                 </div>
                 @if (UserUtil.IsLoggedIn(Context)) {
-                    <a class="nav-link btn btn-outline-primary btn-sm" asp-area="" asp-controller="Main" asp-action="logout">Logged in as @UserUtil.UserFromContext(Context).username - Logout</a>
+                    <a class="nav-link btn btn-outline-primary btn-sm" asp-area="" asp-controller="Main" asp-action="logout"><i class="fas fa-sign-out-alt"></i>&nbsp;Logged in as @UserUtil.UserFromContext(Context).username - Logout</a>
                 } else {
-                    <a class="nav-link btn btn-outline-secondary btn-sm" asp-area="" asp-controller="Main" asp-action="login">Sign in (GitHub)</a>
+                    <a class="nav-link btn btn-outline-secondary btn-sm" asp-area="" asp-controller="Main" asp-action="login"><i class="fas fa-sign-in-alt"></i>&nbsp;Sign in (GitHub)</a>
                 }
 
             </div>

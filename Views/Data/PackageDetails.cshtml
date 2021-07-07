@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewData["Title"] = Model.package.package_name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model DMPackageManager.Website.Models.Page.PackageInfo; 
+@using DMPackageManager.Website.Models.Database;
+
+<div class="row">
+    <div class="col col-8">
+        <h1 class="display-4"><a asp-area="" asp-controller="user" asp-action="@Model.package.owner.username">@Model.package.owner.username</a>/@Model.package.package_name</h1>
+        @if (@Model.current_version != null) {
+            <code>@Model.current_version.version</code>
+            // Has to be div encased because thanks ASP
+            <div>
+                <hr />
+                <code>dmpm.toml</code> entry:
+                <div class="p-2 mb-2 bg-dark">
+                    <code class="text-warning">"@Model.package.package_name" = "@Model.current_version.version"</code>
+                </div>
+            </div>
+        }
+        <p>@Model.package.description</p>
+        @if (Model.releases.Count > 0) {
+            <hr />
+            <h4>Release Notes</h4>
+            <p id="releasenotesHolder">@Model.current_version.release_notes</p>
+            <button class="btn btn-light btn-outline-dark btn-block mb-1" type="button" data-toggle="collapse" data-target="#releasesContainer" aria-expanded="false" aria-controls="releasesContainer">Show older releases</button>
+            <div class="collapse" id="releasesContainer">
+                <div class="card card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Version</th>
+                                <th scope="col">Downloads</th>
+                                <th scope="col">Release Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (PackageVersion PV in Model.releases) {
+                                <tr>
+                                    <th scope="row"><a asp-controller="package" asp-action="@Model.package.package_name" asp-route-version="@PV.version">@PV.version</a></th>
+                                    <td>@PV.download_count</td>
+                                    <td>@PV.release_date</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col col-4">
+        <h1 class="display-4">Info</h1>
+        <hr />
+        <ul class="list-unstyled">
+            <li><i class="fas fa-calendar"></i>&nbsp;Created on @Model.package.creation_date</li>
+            @if (!(Model.package_meta.last_update.CompareTo(DateTime.MinValue) == 0)) {
+                // ASP makes me wrap this in spans. Pain
+                <li><i class="fas fa-edit"></i>&nbsp;Updated on @Model.package_meta.last_update</li>
+            }
+
+            @if (!(Model.package_meta.latest_version == null)) {
+                // ASP makes me wrap this in spans. Pain
+                <li><i class="fas fa-tag"></i>&nbsp;Latest version: <a asp-controller="package" asp-action="@Model.package.package_name" asp-route-version="@Model.package_meta.latest_version">@Model.package_meta.latest_version</a></li>
+            }
+            @if ((Model.current_version != null) && (!(Model.current_version.download_count == 0))) {
+                // ASP makes me wrap this in spans. Pain
+                <li><i class="fas fa-file-download"></i>&nbsp;@Model.current_version.download_count downloads (current version)</li>
+            }
+            @if (!(Model.package_meta.total_downloads == 0)) {
+                // ASP makes me wrap this in spans. Pain
+                <li><i class="fas fa-download"></i>&nbsp;@Model.package_meta.total_downloads downloads (all time)</li>
+            }
+        </ul>
+        @if ((!(Model.package.source_url == null)) || (!(Model.package.documentation_url == null))) {
+            <hr />
+        }
+        <ul class="list-unstyled">
+            @if (!(Model.package.source_url == null)) {
+                // ASP makes me wrap this in spans. Pain
+                <li><i class="fab fa-git-alt"></i>&nbsp;<a href="@Model.package.source_url">Source Code</a></li>
+            }
+            @if (!(Model.package.documentation_url == null)) {
+                // ASP makes me wrap this in spans. Pain
+                <li><i class="fas fa-file-alt"></i>&nbsp;<a href="@Model.package.documentation_url">Documentation</a></li>
+            }
+        </ul>
+    </div>
+</div>
+<script src="~/lib/markdown-it/markdown-it.min.js"></script>
+<script>
+    document.getElementById("releasenotesHolder").innerHTML = window.markdownit().render(document.getElementById("releasenotesHolder").innerHTML)
+</script>

@@ -1,5 +1,7 @@
 ﻿using DMPackageManager.Website.Database;
+using DMPackageManager.Website.Models.Database;
 using DMPackageManager.Website.Models.Page;
+using DMPackageManager.Website.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -68,7 +70,7 @@ namespace DMPackageManager.Website.Controllers {
                 } else {
                     if (npi.pdesc.Length < 8) {
                         success = false;
-                        cpi.errors.Add("Package description is too short (Must be atleast 4 characters)");
+                        cpi.errors.Add("Package description is too short (Must be atleast 8 characters)");
                     }
                     if (npi.pdesc.Length > 256) {
                         success = false;
@@ -108,6 +110,24 @@ namespace DMPackageManager.Website.Controllers {
                     if(_dbc.packages.Where(p => p.package_name == npi.pname).Any()) {
                         success = false;
                         cpi.errors.Add("Package name already in use");
+                    }
+
+                    // We can now make the package
+                    if(success) {
+                        Package P = new Package();
+                        P.package_name = npi.pname;
+                        P.description = npi.pdesc;
+                        P.creation_date = DateTime.Now;
+                        // We need our user. Do not just assign the context user here. It wont work
+                        DatabaseUser temp_user = UserUtil.UserFromContext(HttpContext);
+                        DatabaseUser stored_user = _dbc.users.Where(u => u.userId == temp_user.userId).First();
+                        P.owner = stored_user;
+                        P.documentation_url = npi.durl;
+                        P.source_url = npi.surl;
+                        _dbc.packages.Add(P);
+                        _dbc.SaveChanges(); // Save it
+                        // Send them to the page they just made
+                        return RedirectToAction(P.package_name, "package");
                     }
                 }
                 return View("CreatePackage", cpi);
