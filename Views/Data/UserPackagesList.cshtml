@@ -14,19 +14,19 @@
 <div class="mb-1">
     @if (Model.own_packages) {
         // Check if we are looking at our own package list
-        <a class="btn btn-success btn-sm" asp-area="" asp-controller="core" asp-action="createnew">Create Package</a>
+        <a class="btn btn-success btn-sm" asp-controller="PackageManagement" asp-action="CreatePackage">Create Package</a>
     }
     @if (Model.packages.HasPreviousPage) {
-        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex - 1)" class="ml-1 btn btn-primary btn-sm @prevDisabled">Previous</a>
+        <a asp-controller="Data" asp-action="GetUserPackages" asp-route-userName="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex - 1)" class="ml-1 btn btn-primary btn-sm @prevDisabled">Previous</a>
     }
     @if (Model.packages.HasNextPage) {
-        <a asp-controller="user" asp-action="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex + 1)" class="ml-1 btn btn-primary btn-sm @nextDisabled">Next</a>
+        <a asp-controller="Data" asp-action="GetUserPackages" asp-route-userName="@Model.raw_username" asp-route-p="@(Model.packages.PageIndex + 1)" class="ml-1 btn btn-primary btn-sm @nextDisabled">Next</a>
     }
 </div>
 @foreach (Package P in Model.packages) {
     <div class="card mt-3">
         <div class="card-body">
-            <h4><a asp-area="" asp-controller="package" asp-action="@P.package_name">@P.package_name</a> by <a asp-area="" asp-controller="user" asp-action="@P.owner.username">@P.owner.username</a></h4>
+            <h4><a asp-controller="Data" asp-action="GetPackage" asp-route-packageTag="@P.package_name">@P.package_name</a> by <a asp-controller="Data" asp-action="GetUserPackages" asp-route-userName="@P.owner.username">@P.owner.username</a></h4>
             <p class="text-secondary">
                 <i class="fas fa-calendar-alt"></i>&nbsp;Created on @P.creation_date
                 @if (!(Model.package_meta[P.id].last_update.CompareTo(DateTime.MinValue) == 0)) {

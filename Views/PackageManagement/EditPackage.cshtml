@@ -1,17 +1,18 @@
 ﻿
 @{
-    ViewData["Title"] = "Create package";
+    ViewData["Title"] = "Editing " + Model.pname;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@model DMPackageManager.Website.Models.Page.NewPackageInfo;
+@model DMPackageManager.Website.Models.Page.EditPackageInfo;
 
-<h1 class="display-4">Create new package</h1>
+<h1 class="display-4">Editing @Model.pname</h1>
+<a class="btn btn-primary btn-sm mb-1" asp-controller="Data" asp-action="GetPackage" asp-route-packageTag="@Model.pname"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;Return</a>
 <form method="post">
     <div class="row">
         <div class="col">
             <div class="form-group">
-                <input type="text" class="form-control" name="pname" aria-describedby="namehelp" placeholder="Package name" value="@Model.pname">
-                <small id="namehelp" class="form-text text-muted">Must be between 4-32 characters. No spaces. Lowercase alphanumeric only (dashes and underscores are allowed).</small>
+                <input type="text" class="form-control" name="pname" aria-describedby="namehelp" readonly value="@Model.pname">
+                <small id="namehelp" class="form-text text-muted">You cannot change the name of your package.</small>
             </div>
         </div>
         <div class="col">
@@ -36,14 +37,19 @@
         </div>
     </div>
     <button type="submit" class="btn btn-success btn-block">Create</button>
-    @if(Model.errors.Count > 0) {
+    @if (Model.errors.Count > 0) {
         <div class="alert alert-danger mt-2">
-            <h3>The following errors occured when trying to create the package:</h3>
+            <h3>The following errors occured when trying to edit the package:</h3>
             <ul>
-                @foreach(string S in Model.errors) {
+                @foreach (string S in Model.errors) {
                     <li>@S</li>
                 }
             </ul>
+        </div>
+    }
+    @if (Model.success) {
+        <div class="alert alert-success mt-2">
+            <p>Edits saved successfully</p>
         </div>
     }
 </form>

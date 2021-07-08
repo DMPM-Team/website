@@ -5,9 +5,9 @@
 <div class="text-center mt-lg-5 mb-lg-5">
     <h1 class="display-4">DMPM</h1>
     <p>A package manager for applications written in the BYOND DM programming language.</p>
-    <a class="btn btn-lg btn-primary" asp-area="" asp-controller="Main" asp-action="Index"><i class="fas fa-download"></i>&nbsp;Install</a>
-    <a class="btn btn-lg btn-primary" asp-area="" asp-controller="packages" asp-action=""><i class="fas fa-search"></i>&nbsp;Search packages</a>
-    <a class="btn btn-lg btn-primary" asp-area="" asp-controller="Main" asp-action="Index"><i class="fas fa-cube"></i>&nbsp;Create a package</a>
+    <a class="btn btn-lg btn-primary" asp-controller="Main" asp-action="Index"><i class="fas fa-download"></i>&nbsp;Install</a>
+    <a class="btn btn-lg btn-primary" asp-controller="Data" asp-action="GetAllPackages"><i class="fas fa-search"></i>&nbsp;Search packages</a>
+    <a class="btn btn-lg btn-primary" asp-controller="Main" asp-action="Index"><i class="fas fa-cube"></i>&nbsp;Create a package</a>
 </div>
 <hr />
 <h1>TODO: Write more stuff here</h1>

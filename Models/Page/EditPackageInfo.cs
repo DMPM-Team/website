@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMPackageManager.Website.Models.Page {
-    public class CreatePackageInfo : NewPackageInput {
+    public class EditPackageInfo : NewPackageInfo {
         /// <summary>
-        /// List of errors when trying to create a package
+        /// Did the edit go through successfully
         /// </summary>
-        public List<string> errors { get; set; } = new List<string>();
+        public bool success { get; set; }
     }
 }

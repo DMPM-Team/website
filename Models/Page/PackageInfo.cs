@@ -24,5 +24,10 @@ namespace DMPackageManager.Website.Models.Page {
         /// Holder for current version
         /// </summary
         public PackageVersion current_version { get; set; }
+
+        /// <summary>
+        /// Does the user currently looking at the page own this package
+        /// </summary>
+        public bool owns_this_package { get; set; }
     }
 }

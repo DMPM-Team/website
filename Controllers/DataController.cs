@@ -68,7 +68,7 @@ namespace DMPackageManager.Website.Controllers {
         /// <param name="packageTag">The tag of the package to search for</param>
         /// <param name="version">The (optional) version to load</param>
         /// <returns></returns>
-        [Route("package/{packageTag}")]
+        [Route("package/{packageTag}/{version?}")]
         public IActionResult GetPackage(string packageTag, string version) {
             if(String.IsNullOrWhiteSpace(packageTag)) {
                 return BadRequest("No package name supplied");
@@ -80,6 +80,12 @@ namespace DMPackageManager.Website.Controllers {
             // If we have a version, check that version exists
             PackageInfo pi = new PackageInfo();
             pi.package = _dbc.packages.Where(p => p.package_name == packageTag).Include(p => p.owner).First();
+            // Check if we own the package
+            if(pi.package.owner.userId == UserUtil.UserFromContext(HttpContext).userId) {
+                pi.owns_this_package = true;
+            } else {
+                pi.owns_this_package = false;
+            }
             // Load all releases
             if (_dbc.package_releases.Where(r => r.package.id == pi.package.id).Any()) {
                 pi.releases = _dbc.package_releases.Where(r => r.package.id == pi.package.id).OrderByDescending(r => r.release_date).ToList();
@@ -123,7 +129,7 @@ namespace DMPackageManager.Website.Controllers {
                 query = query.Where(p => p.package_name.Contains(searchQuery));
             }
 
-            return PaginatedList<Package>.Create(query.AsNoTracking(), page, pageSize);
+            return PaginatedList<Package>.Create(query.OrderByDescending(p => p.creation_date).AsNoTracking(), page, pageSize);
         }
 
         private Dictionary<int, PackageDisplay> FormatPackageMeta(PaginatedList<Package> packages) {
