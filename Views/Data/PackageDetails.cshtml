@@ -86,11 +86,12 @@
                 <li><i class="fas fa-file-alt"></i>&nbsp;<a href="@Model.package.documentation_url">Documentation</a></li>
             }
         </ul>
-        @if (Model.owns_this_package) { 
+        @if (Model.owns_this_package) {
             <hr />
             <a class="btn btn-sm btn-primary" asp-controller="PackageManagement" asp-action="EditPackage" asp-route-package_name="@Model.package.package_name"><i class="fas fa-edit"></i>&nbsp;Edit Package</a>
+            <a class="btn btn-sm btn-success" asp-controller="PackageManagement" asp-action="CreateNewRelease" asp-route-package_name="@Model.package.package_name"><i class="fas fa-plus"></i>&nbsp;New Release</a>
         }
-        </div>
+    </div>
 </div>
 <script src="~/lib/markdown-it/markdown-it.min.js"></script>
 <script>

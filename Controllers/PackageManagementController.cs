@@ -147,6 +147,29 @@ namespace DMPackageManager.Website.Controllers {
 
         }
 
+        [Route("core/createrelease/{package_name}")]
+        [HttpGet]
+        [HttpPost]
+        public IActionResult CreateNewRelease(string package_name) {
+            // First we need to see if they supplied a package at all
+            if (package_name == null) {
+                return BadRequest("No package name supplied!");
+            }
+            // They supplied a package name, see if it exists
+            if (!_dbc.packages.Where(p => p.package_name == package_name).Any()) {
+                return NotFound(String.Format("The package '{0}' could not be found.", package_name));
+            }
+            // Lets see if they own it
+            if (!_dbc.packages.Where(p => p.package_name == package_name).Where(p => p.owner.userId == UserUtil.UserFromContext(HttpContext).userId).Any()) {
+                return Unauthorized(String.Format("You do not own '{0}'!", package_name));
+            }
+            // Standardise the name
+            Package P = _dbc.packages.Where(p => p.package_name == package_name).First();
+            NewRelease nr = new NewRelease();
+            nr.package_name = P.package_name;
+            return View("CreateRelease", nr);
+        }
+
         /// <summary>
         /// Checks a <see cref="NewPackageInput">NewPackageInput</see> to see if it matches criteria.
         /// </summary>

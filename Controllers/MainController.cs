@@ -39,6 +39,11 @@ namespace DMPackageManager.Website.Controllers {
             return View();
         }
 
+        [Route("packagespec")]
+        public IActionResult PackageSpec() {
+            return View("PackageSpec");
+        }
+
         // High quality login handler
         [Authorize]
         [Route("login")]
