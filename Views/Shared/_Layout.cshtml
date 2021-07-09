@@ -36,9 +36,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Data" asp-action="GetAllPackages"><i class="fas fa-cubes"></i>&nbsp;Packages</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="https://github.com/DMPM-Team/"><i class="fab fa-github"></i>&nbsp;Source / report issue</a>
-                        </li>
                         @if (UserUtil.IsLoggedIn(Context)) {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Data" asp-action="GetUserPackages" asp-route-userName="@UserUtil.UserFromContext(Context).username"><i class="fas fa-user"></i>&nbsp;My packages</a>
@@ -60,6 +57,11 @@
             @RenderBody()
         </main>
     </div>
+    <footer class="footer bg-light">
+        <div class="container">
+            &copy; DMPM Team - Not affiliated with BYOND - <a href="https://github.com/DMPM-Team/"><i class="fab fa-github"></i>&nbsp;Source / report issue</a>
+        </div>
+    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

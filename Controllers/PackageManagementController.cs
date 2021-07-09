@@ -180,36 +180,45 @@ namespace DMPackageManager.Website.Controllers {
                 bool success = true;
                 if (String.IsNullOrWhiteSpace(ri.rnotes)) {
                     nr.errors.Add("Release notes must not be blank");
-                    success = false;
+                    return View("CreateRelease", nr);
                 } else {
                     if(ri.rnotes.Length < 16) {
                         nr.errors.Add("Release notes must be more than 16 characters");
-                        success = false;
+                        return View("CreateRelease", nr);
                     }
                     if (ri.rnotes.Length > 8192) {
                         nr.errors.Add("Release notes must be less than 8192 characters");
-                        success = false;
+                        return View("CreateRelease", nr);
                     }
                 }
 
                 if (String.IsNullOrWhiteSpace(ri.vtag)) {
                     nr.errors.Add("Version tag must not be blank");
-                    success = false;
+                    return View("CreateRelease", nr);
                 }
 
                 // Trim whitespace
                 ri.vtag = ri.vtag.Trim();
 
-                // Make sure they didnt already use that revision
-                if(_dbc.package_releases.Where(r => r.package == P).Where(r => r.version == ri.vtag).Any()) {
-                    nr.errors.Add("Version tag already in use");
-                    success = false;
-                }
-
-                // If we arent successful here, bail early
-                if (!success) {
+                // We parse the version to a Version operator to enforce semantic versioning. If this fails to parse, we can assume the user didnt use semver
+                Version v;
+                string semver_string = "";
+                try {
+                    v = Version.Parse(ri.vtag);
+                    semver_string = v.ToString();
+                } catch(Exception) {
+                    nr.errors.Add("Version tag must be in semver format.");
                     return View("CreateRelease", nr);
                 }
+
+
+                // Make sure they didnt already use that revision
+                if (_dbc.package_releases.Where(r => r.package == P).Where(r => r.version == semver_string).Any()) {
+                    nr.errors.Add("Version tag already in use");
+                    return View("CreateRelease", nr);
+                }
+
+
                 if (ri.packagezip == null) {
                     nr.errors.Add("Package file was not uploaded");
                     success = false;
@@ -292,7 +301,7 @@ namespace DMPackageManager.Website.Controllers {
                     PV.package = P;
                     PV.release_date = DateTime.Now;
                     PV.release_notes = ri.rnotes;
-                    PV.version = ri.vtag;
+                    PV.version = semver_string;
                     _dbc.package_releases.Add(PV);
                     _dbc.SaveChanges();
 
