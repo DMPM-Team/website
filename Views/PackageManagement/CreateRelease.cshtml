@@ -7,17 +7,17 @@
 
 <h1 class="display-4">Create release</h1>
 <p><i>Package: <code>@Model.package_name</code></i></p>
-<form>
+<form method="post" enctype="multipart/form-data">
     <div class="row">
         <div class="col">
             <div class="form-group">
-                <input type="text" class="form-control" name="vname" aria-describedby="vhelp" placeholder="Release name" value="TODO">
+                <input type="text" class="form-control" name="vtag" aria-describedby="vhelp" placeholder="Release name" value="@Model.vtag">
                 <small id="vhelp" class="form-text text-muted">We recommend standard versioning (1.1) but you can use letters as well (1.0-A).</small>
             </div>
         </div>
         <div class="col">
             <div class="form-group">
-                <input type="file" class="form-control-file" name="packagefile" aria-describedby="fhelp" placeholder="Package upload">
+                <input type="file" class="form-control-file" name="packagezip" aria-describedby="fhelp" placeholder="Package upload">
                 <small id="fhelp" class="form-text text-muted">Must be a zip file following the package spec. <a asp-controller="Main" asp-action="PackageSpec">See here for details.</a></small>
             </div>
         </div>
@@ -26,7 +26,7 @@
         <div class="col">
             <div class="form-group">
                 <p>Release notes. Written in markdown.</p>
-                <textarea class="form-control" name="releasenotes" id="rn_container" rows="10" onkeyup="updatePreview()"></textarea>
+                <textarea class="form-control" name="rnotes" id="rn_container" rows="10" onkeyup="updatePreview()">@Model.rnotes</textarea>
             </div>
         </div>
         <div class="col">
@@ -36,9 +36,22 @@
         </div>
     </div>
     <button type="submit" class="btn btn-success btn-block">Create</button>
+    @if (Model.errors.Count > 0) {
+        <div class="alert alert-danger mt-2">
+            <h3>The following errors occured when trying to create the package:</h3>
+            <ul>
+                @foreach (string S in Model.errors) {
+                    <li>@S</li>
+                }
+            </ul>
+        </div>
+    }
 </form>
 <script src="~/lib/markdown-it/markdown-it.min.js"></script>
 <script>
+    // Run once
+    document.getElementById("md_preview").innerHTML = window.markdownit().render(document.getElementById("rn_container").value);
+    // Run on command
     function updatePreview() {
         document.getElementById("md_preview").innerHTML = window.markdownit().render(document.getElementById("rn_container").value);
     }

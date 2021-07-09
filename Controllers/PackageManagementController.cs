@@ -5,9 +5,12 @@ using DMPackageManager.Website.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using nClam;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -150,7 +153,7 @@ namespace DMPackageManager.Website.Controllers {
         [Route("core/createrelease/{package_name}")]
         [HttpGet]
         [HttpPost]
-        public IActionResult CreateNewRelease(string package_name) {
+        public IActionResult CreateNewRelease(string package_name, [FromForm] ReleaseInput ri) {
             // First we need to see if they supplied a package at all
             if (package_name == null) {
                 return BadRequest("No package name supplied!");
@@ -167,7 +170,146 @@ namespace DMPackageManager.Website.Controllers {
             Package P = _dbc.packages.Where(p => p.package_name == package_name).First();
             NewRelease nr = new NewRelease();
             nr.package_name = P.package_name;
+
+            // We got a post! Begin the validation.
+            if (HttpContext.Request.Method == "POST") {
+                // Set the model to our answers to preserve them
+                nr.vtag = ri.vtag;
+                nr.rnotes = ri.rnotes;
+
+                bool success = true;
+                if (String.IsNullOrWhiteSpace(ri.rnotes)) {
+                    nr.errors.Add("Release notes must not be blank");
+                    success = false;
+                } else {
+                    if(ri.rnotes.Length < 16) {
+                        nr.errors.Add("Release notes must be more than 16 characters");
+                        success = false;
+                    }
+                    if (ri.rnotes.Length > 8192) {
+                        nr.errors.Add("Release notes must be less than 8192 characters");
+                        success = false;
+                    }
+                }
+
+                if (String.IsNullOrWhiteSpace(ri.vtag)) {
+                    nr.errors.Add("Version tag must not be blank");
+                    success = false;
+                }
+
+                if(ri.packagezip == null) {
+                    nr.errors.Add("Package file was not uploaded");
+                    success = false;
+                } else {
+                    // Begin validating this fucking mess
+                    // First make sure its a "zip" (More in depth validation done later)
+                    string ext = System.IO.Path.GetExtension(ri.packagezip.FileName);
+                    if (ext != ".zip") {
+                        nr.errors.Add("Package is not a zip. Please read the package spec.");
+                        success = false;
+                    }
+
+                    // If we arent successful here, bail early
+                    if (!success) {
+                        return View("CreateRelease", nr);
+                    }
+
+                    if (ri.packagezip.Length > 5242880) { // 5 megabytes
+                        nr.errors.Add("Package file is too large (>5mb)");
+                        success = false;
+                    }
+
+                    // Then make sure its valid
+                    if (!(ri.packagezip.Length > 0)) {
+                        nr.errors.Add("Package file is invalid");
+                        success = false;
+                    }
+
+                    // If we arent successful here, bail early
+                    if (!success) {
+                        return View("CreateRelease", nr);
+                    }
+
+                    // Hold it in RAM. This thing aint touching the disk.
+                    MemoryStream ms = new MemoryStream();
+                    ri.packagezip.OpenReadStream().CopyTo(ms);
+                    byte[] fileBytes = ms.ToArray();
+
+                    // Begin a virus scan
+                    ClamClient clam = new ClamClient("127.0.0.1", 3310);
+                    Task<ClamScanResult> scanThread = clam.SendAndScanFileAsync(fileBytes);
+                    scanThread.Wait();
+                    ClamScanResults result = scanThread.Result.Result; // Yes double result here. One for the thread, one for the scanner.
+                    if (result != ClamScanResults.Clean) {
+                        nr.errors.Add("Package file did not pass security clearance");
+                        success = false;
+                        // TODO: Maybe log if someone tries to upload malware
+                    }
+
+                    // If we arent successfull here, bail early
+                    if (!success) {
+                        return View("CreateRelease", nr);
+                    }
+
+                    // It didnt have a virus, we can now see 
+                    string temp_path = Path.GetTempFileName();
+                        using (FileStream stream = System.IO.File.Create(temp_path)) {
+                            ms.CopyTo(stream);
+                        }
+
+                    // See if the zip is valid
+                    if (!IsZipValid(temp_path)) {
+                        nr.errors.Add("Package file was not valid");
+                        // Clean it up otherwise
+                        System.IO.File.Delete(temp_path);
+                        success = false;
+                    }
+
+                    // Bail
+                    if (!success) {
+                        return View("CreateRelease", nr);
+                    }
+
+                    // At this point, we have a confirmed zip file thats <5mb, and isnt malware. More validation can be done in the future, but this will do for now
+                    // Make the release
+                    PackageVersion PV = new PackageVersion();
+                    PV.package = P;
+                    PV.release_date = DateTime.Now;
+                    PV.release_notes = ri.rnotes;
+                    PV.version = ri.vtag;
+                    _dbc.package_releases.Add(PV);
+                    _dbc.SaveChanges();
+
+                    // Move it to the right place. Make sure we have our package folder
+                    string new_path = String.Format("App_Data/Package_Data/{0}", P.id);
+                    if (!Directory.Exists(new_path)) {
+                        Directory.CreateDirectory(new_path);
+                    }
+                    System.IO.File.Move(temp_path, String.Format("{0}/{1}.zip", new_path, PV.id));
+                }
+            }
+            
             return View("CreateRelease", nr);
+        }
+
+        /// <summary>
+        /// Check if a file is a valid zip or not
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool IsZipValid(string path) {
+            var zipFile = ZipFile.OpenRead(path);
+            return true;
+            /*
+            try {
+                using (var zipFile = ZipFile.OpenRead(path)) {
+                    var entries = zipFile.Entries;
+                    return true;
+                }
+            } catch (InvalidDataException) {
+                return false;
+            }
+            */
         }
 
         /// <summary>
