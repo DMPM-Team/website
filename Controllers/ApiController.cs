@@ -51,5 +51,13 @@ namespace DMPackageManager.Website.Controllers {
             }
             return Ok(PS);
         }
+
+        [Route("cli_version")]
+        public IActionResult GetCLIVersion() {
+            // Supply a simple return of the current CLI version
+            CliVersion CLIV = new CliVersion();
+            CLIV.latest_version = "1.0.0"; // Update when new releases come out
+            return Ok(CLIV);
+        }
     }
 }
