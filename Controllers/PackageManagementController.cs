@@ -257,7 +257,8 @@ namespace DMPackageManager.Website.Controllers {
                     if (result != ClamScanResults.Clean) {
                         nr.errors.Add("Package file did not pass security clearance");
                         success = false;
-                        // TODO: Maybe log if someone tries to upload malware
+                        DatabaseUser U = UserUtil.UserFromContext(HttpContext);
+                        _logger.LogWarning(String.Format("{0}/{1} attempted to upload malware.", U.username, U.userId));
                     }
 
                     // If we arent successfull here, bail early

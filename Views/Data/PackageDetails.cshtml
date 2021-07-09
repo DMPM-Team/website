@@ -76,16 +76,21 @@
         @if ((!(Model.package.source_url == null)) || (!(Model.package.documentation_url == null))) {
             <hr />
         }
-        <ul class="list-unstyled">
-            @if (!(Model.package.source_url == null)) {
-                // ASP makes me wrap this in spans. Pain
-                <li><i class="fab fa-git-alt"></i>&nbsp;<a href="@Model.package.source_url">Source Code</a></li>
-            }
-            @if (!(Model.package.documentation_url == null)) {
-                // ASP makes me wrap this in spans. Pain
-                <li><i class="fas fa-file-alt"></i>&nbsp;<a href="@Model.package.documentation_url">Documentation</a></li>
-            }
-        </ul>
+    <ul class="list-unstyled">
+        @if (!(Model.package.source_url == null)) {
+            // ASP makes me wrap this in spans. Pain
+            <li><i class="fab fa-git-alt"></i>&nbsp;<a href="@Model.package.source_url">Source Code</a></li>
+        }
+        @if (!(Model.package.documentation_url == null)) {
+            // ASP makes me wrap this in spans. Pain
+            <li><i class="fas fa-file-alt"></i>&nbsp;<a href="@Model.package.documentation_url">Documentation</a></li>
+        }
+        @if (!(Model.current_version == null)) {
+            // ASP makes me wrap this in spans. Pain
+    <li><i class="fas fa-file-archive"></i>&nbsp;<a asp-controller="File" asp-action="GetPackageZIP" asp-route-package_name="@Model.package.package_name" asp-route-package_version="@Model.current_version.version">Download zip</a></li>
+        }
+        
+    </ul>
         @if (Model.owns_this_package) {
             <hr />
             <a class="btn btn-sm btn-primary" asp-controller="PackageManagement" asp-action="EditPackage" asp-route-package_name="@Model.package.package_name"><i class="fas fa-edit"></i>&nbsp;Edit Package</a>
