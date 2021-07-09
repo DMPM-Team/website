@@ -197,7 +197,20 @@ namespace DMPackageManager.Website.Controllers {
                     success = false;
                 }
 
-                if(ri.packagezip == null) {
+                // Trim whitespace
+                ri.vtag = ri.vtag.Trim();
+
+                // Make sure they didnt already use that revision
+                if(_dbc.package_releases.Where(r => r.package == P).Where(r => r.version == ri.vtag).Any()) {
+                    nr.errors.Add("Version tag already in use");
+                    success = false;
+                }
+
+                // If we arent successful here, bail early
+                if (!success) {
+                    return View("CreateRelease", nr);
+                }
+                if (ri.packagezip == null) {
                     nr.errors.Add("Package file was not uploaded");
                     success = false;
                 } else {
@@ -236,6 +249,7 @@ namespace DMPackageManager.Website.Controllers {
                     byte[] fileBytes = ms.ToArray();
 
                     // Begin a virus scan
+                    // TODO: Make this host configurable
                     ClamClient clam = new ClamClient("127.0.0.1", 3310);
                     Task<ClamScanResult> scanThread = clam.SendAndScanFileAsync(fileBytes);
                     scanThread.Wait();
@@ -254,6 +268,7 @@ namespace DMPackageManager.Website.Controllers {
                     // It didnt have a virus, we can now see 
                     string temp_path = Path.GetTempFileName();
                         using (FileStream stream = System.IO.File.Create(temp_path)) {
+                            ms.Position = 0; // Gotta reset this
                             ms.CopyTo(stream);
                         }
 
@@ -286,6 +301,9 @@ namespace DMPackageManager.Website.Controllers {
                         Directory.CreateDirectory(new_path);
                     }
                     System.IO.File.Move(temp_path, String.Format("{0}/{1}.zip", new_path, PV.id));
+
+                    // If we got here, take them back to their package
+                    return RedirectToAction(P.package_name, "package");
                 }
             }
             
@@ -298,18 +316,15 @@ namespace DMPackageManager.Website.Controllers {
         /// <param name="path"></param>
         /// <returns></returns>
         public static bool IsZipValid(string path) {
-            var zipFile = ZipFile.OpenRead(path);
-            return true;
-            /*
             try {
                 using (var zipFile = ZipFile.OpenRead(path)) {
                     var entries = zipFile.Entries;
+                    zipFile.Dispose();
                     return true;
                 }
             } catch (InvalidDataException) {
                 return false;
             }
-            */
         }
 
         /// <summary>
